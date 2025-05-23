@@ -16,8 +16,6 @@
             background-color: #f0f8ff;
             overflow: hidden;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
         
         /* Main Menu Styles */
@@ -30,21 +28,40 @@
             background: linear-gradient(135deg, #6e8efb, #a777e3);
             color: white;
             text-align: center;
-            transition: all 0.5s ease;
             position: absolute;
             width: 100%;
             top: 0;
             left: 0;
             z-index: 10;
+            transition: transform 0.5s ease;
         }
         .main-menu.hidden {
             transform: translateY(-100%);
         }
+        
+        .player-name-input {
+            margin: 20px 0;
+            padding: 10px 15px;
+            border: 2px solid white;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1rem;
+            width: 80%;
+            max-width: 300px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .player-name-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
         .game-title {
             font-size: 3rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
+        
         .menu-buttons {
             display: flex;
             flex-direction: column;
@@ -52,6 +69,7 @@
             width: 80%;
             max-width: 300px;
         }
+        
         .menu-btn {
             background: rgba(255,255,255,0.2);
             border: 2px solid white;
@@ -63,12 +81,39 @@
             transition: all 0.3s;
             backdrop-filter: blur(5px);
         }
+        
         .menu-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: translateY(-3px);
         }
+        
         .menu-btn i {
             margin-right: 10px;
+        }
+        
+        /* Difficulty Selection */
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            width: 80%;
+            max-width: 300px;
+        }
+        
+        .difficulty-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid white;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.active {
+            background: rgba(255,255,255,0.4);
+            font-weight: bold;
         }
         
         /* Game Container */
@@ -86,9 +131,11 @@
             transition: transform 0.5s ease;
             z-index: 5;
         }
+        
         .game-container.show {
             transform: translateY(-100%);
         }
+        
         .game-header {
             width: 100%;
             display: flex;
@@ -98,9 +145,16 @@
             color: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        
         .score-display {
             font-size: 1.2rem;
         }
+        
+        .player-display {
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        
         .pause-btn {
             background: none;
             border: none;
@@ -128,11 +182,13 @@
             margin-top: 20px;
             width: 100%;
         }
+        
         .touch-row {
             display: flex;
             justify-content: center;
             width: 100%;
         }
+        
         .touch-btn {
             width: 80px;
             height: 80px;
@@ -148,6 +204,7 @@
             -webkit-user-select: none;
             touch-action: manipulation;
         }
+        
         .touch-btn:active {
             background: rgba(41, 128, 185, 0.9);
             transform: scale(0.95);
@@ -166,6 +223,7 @@
             align-items: center;
             justify-content: center;
         }
+        
         .modal-content {
             background: white;
             border-radius: 15px;
@@ -177,27 +235,63 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.3);
             animation: popIn 0.3s;
         }
+        
         @keyframes popIn {
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
+        
         .modal-title {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.5rem;
         }
+        
         .modal-icon {
             font-size: 3rem;
             text-align: center;
             margin: 20px 0;
             color: #e74c3c;
         }
+        
+        /* Platform Tabs */
+        .platform-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .platform-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .platform-tab.active {
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        /* Instructions */
+        .platform-instruction {
+            display: none;
+        }
+        
+        .platform-instruction.active {
+            display: block;
+        }
+        
         .instruction-item {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
+        
         .instruction-icon {
             font-size: 1.5rem;
             margin-right: 15px;
@@ -205,6 +299,7 @@
             min-width: 30px;
             text-align: center;
         }
+        
         .modal-btn {
             background: #2ecc71;
             color: white;
@@ -218,6 +313,7 @@
             margin-top: 20px;
             transition: all 0.3s;
         }
+        
         .modal-btn:hover {
             background: #27ae60;
         }
@@ -226,23 +322,84 @@
         .game-over-modal .modal-content {
             text-align: center;
         }
+        
         .final-score {
             font-size: 1.5rem;
             color: #e74c3c;
             margin: 20px 0;
         }
+        
         .action-buttons {
             display: flex;
             gap: 10px;
         }
+        
         .action-btn {
             flex: 1;
         }
+        
         .btn-home {
             background: #3498db;
         }
+        
         .btn-home:hover {
             background: #2980b9;
+        }
+        
+        /* High Scores Modal */
+        .high-scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .high-scores-table th, .high-scores-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .high-scores-table th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        
+        .high-scores-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        /* Celebration Modal */
+        .celebration-modal .modal-content {
+            text-align: center;
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            color: white;
+        }
+        
+        .celebration-icon {
+            font-size: 4rem;
+            margin: 20px 0;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
+        }
+        
+        .champion-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 1000;
         }
         
         /* Responsive Adjustments */
@@ -250,9 +407,12 @@
             .game-title {
                 font-size: 2rem;
             }
-            .menu-btn {
+            .menu-btn, .difficulty-btn {
                 padding: 12px;
                 font-size: 1rem;
+            }
+            .player-name-input {
+                padding: 10px 15px;
             }
             .touch-btn {
                 width: 70px;
@@ -260,21 +420,21 @@
                 font-size: 1.5rem;
             }
         }
-        
-        /* Confetti Celebration */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            opacity: 0;
-        }
     </style>
 </head>
 <body>
     <!-- Main Menu -->
     <div class="main-menu" id="mainMenu">
         <h1 class="game-title">🐍 Snake Game 🐍</h1>
+        
+        <input type="text" class="player-name-input" id="playerNameInput" placeholder="Enter your name" maxlength="15">
+        
+        <div class="difficulty-buttons">
+            <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+            <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+            <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+        </div>
+        
         <div class="menu-buttons">
             <button class="menu-btn" id="playBtn"><i class="fas fa-play"></i> Play Game</button>
             <button class="menu-btn" id="howToPlayBtn"><i class="fas fa-question-circle"></i> How to Play</button>
@@ -285,7 +445,10 @@
     <!-- Game Container -->
     <div class="game-container" id="gameScreen">
         <div class="game-header">
-            <div class="score-display">Score: <span id="currentScore">0</span></div>
+            <div>
+                <span class="player-display" id="playerNameDisplay">Player</span>
+                <span class="score-display">Score: <span id="currentScore">0</span></span>
+            </div>
             <button class="pause-btn" id="pauseBtn"><i class="fas fa-pause"></i></button>
         </div>
         
@@ -307,28 +470,56 @@
     <div class="modal" id="howToPlayModal">
         <div class="modal-content">
             <h2 class="modal-title">How to Play</h2>
-            <div class="modal-icon">
-                <i class="fas fa-snake"></i>
+            
+            <div class="platform-tabs">
+                <button class="platform-tab active" data-platform="desktop">Desktop</button>
+                <button class="platform-tab" data-platform="mobile">Mobile</button>
             </div>
             
-            <div class="instruction-item">
-                <div class="instruction-icon"><i class="fas fa-arrows-alt"></i></div>
-                <div>Use arrow keys or tap screen edges to change direction</div>
+            <div class="platform-instruction active" data-platform="desktop">
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-keyboard"></i></div>
+                    <div>Use <strong>arrow keys</strong> to control the snake</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-space-shuttle"></i></div>
+                    <div>Press <strong>spacebar</strong> to pause/resume</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-apple-alt"></i></div>
+                    <div>Eat the <strong>red food</strong> to grow longer</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-border-none"></i></div>
+                    <div>Snake can <strong>pass through walls</strong></div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-skull"></i></div>
+                    <div>Avoid <strong>hitting your own tail</strong></div>
+                </div>
             </div>
             
-            <div class="instruction-item">
-                <div class="instruction-icon"><i class="fas fa-apple-alt"></i></div>
-                <div>Eat the red food to grow longer</div>
-            </div>
-            
-            <div class="instruction-item">
-                <div class="instruction-icon"><i class="fas fa-skull"></i></div>
-                <div>Avoid hitting walls or your own tail</div>
-            </div>
-            
-            <div class="instruction-item">
-                <div class="instruction-icon"><i class="fas fa-trophy"></i></div>
-                <div>Score points for each food collected</div>
+            <div class="platform-instruction" data-platform="mobile">
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <div>Use <strong>touch buttons</strong> to control the snake</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-hand-pointer"></i></div>
+                    <div>Or <strong>tap screen edges</strong> to change direction</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-apple-alt"></i></div>
+                    <div>Eat the <strong>red food</strong> to grow longer</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-border-none"></i></div>
+                    <div>Snake can <strong>pass through walls</strong></div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon"><i class="fas fa-skull"></i></div>
+                    <div>Avoid <strong>hitting your own tail</strong></div>
+                </div>
             </div>
             
             <button class="modal-btn" id="gotItBtn">Got It!</button>
@@ -343,7 +534,9 @@
                 <i class="fas fa-gamepad"></i>
             </div>
             
-            <div class="final-score">Your Score: <span id="finalScore">0</span></div>
+            <div class="final-score">
+                <span id="finalPlayerName">Player</span> scored: <span id="finalScore">0</span>
+            </div>
             
             <div class="action-buttons">
                 <button class="modal-btn action-btn" id="playAgainBtn"><i class="fas fa-redo"></i> Play Again</button>
@@ -356,10 +549,34 @@
     <div class="modal" id="highScoresModal">
         <div class="modal-content">
             <h2 class="modal-title"><i class="fas fa-trophy"></i> High Scores</h2>
-            <div id="highScoresList" style="max-height: 300px; overflow-y: auto;">
-                <!-- Scores will be inserted here -->
-            </div>
+            <table class="high-scores-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Difficulty</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="highScoresList">
+                    <!-- Scores will be inserted here -->
+                </tbody>
+            </table>
             <button class="modal-btn" id="closeScoresBtn"><i class="fas fa-times"></i> Close</button>
+        </div>
+    </div>
+    
+    <!-- Celebration Modal -->
+    <div class="modal celebration-modal" id="celebrationModal">
+        <div class="modal-content">
+            <div class="celebration-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 class="modal-title">New High Score!</h2>
+            <div class="champion-name" id="championName">Player</div>
+            <p>You've set a new record of <span id="championScore">0</span>!</p>
+            <button class="modal-btn" id="celebrateBtn">Awesome!</button>
         </div>
     </div>
     
@@ -370,8 +587,16 @@
         const gameCanvas = document.getElementById('gameCanvas');
         const ctx = gameCanvas.getContext('2d');
         const currentScoreElement = document.getElementById('currentScore');
+        const playerNameDisplay = document.getElementById('playerNameDisplay');
         const finalScoreElement = document.getElementById('finalScore');
+        const finalPlayerName = document.getElementById('finalPlayerName');
         const highScoresList = document.getElementById('highScoresList');
+        const championName = document.getElementById('championName');
+        const championScore = document.getElementById('championScore');
+        
+        // Input Elements
+        const playerNameInput = document.getElementById('playerNameInput');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
         
         // Buttons
         const playBtn = document.getElementById('playBtn');
@@ -382,6 +607,7 @@
         const playAgainBtn = document.getElementById('playAgainBtn');
         const homeBtn = document.getElementById('homeBtn');
         const closeScoresBtn = document.getElementById('closeScoresBtn');
+        const celebrateBtn = document.getElementById('celebrateBtn');
         
         // Direction Buttons
         const upBtn = document.getElementById('upBtn');
@@ -393,6 +619,11 @@
         const howToPlayModal = document.getElementById('howToPlayModal');
         const gameOverModal = document.getElementById('gameOverModal');
         const highScoresModal = document.getElementById('highScoresModal');
+        const celebrationModal = document.getElementById('celebrationModal');
+        
+        // Platform Tabs
+        const platformTabs = document.querySelectorAll('.platform-tab');
+        const platformInstructions = document.querySelectorAll('.platform-instruction');
         
         // Game Variables
         let snake = [];
@@ -400,11 +631,13 @@
         let dx = 0;
         let dy = 0;
         let score = 0;
-        let gameSpeed = 100;
+        let gameSpeed = 150; // Default to easy
         let gridSize = 20;
         let tileSize = 20;
         let gameInterval;
         let isPaused = false;
+        let playerName = "Player";
+        let difficulty = "easy";
         let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
         
         // Initialize Game
@@ -414,6 +647,10 @@
             gameCanvas.width = Math.floor(maxSize / gridSize) * gridSize;
             gameCanvas.height = gameCanvas.width;
             tileSize = gameCanvas.width / gridSize;
+            
+            // Set player name
+            playerName = playerNameInput.value.trim() || "Player";
+            playerNameDisplay.textContent = playerName;
             
             // Reset snake
             const startX = Math.floor(gridSize / 2) * tileSize;
@@ -485,7 +722,6 @@
         
         // Check Collisions
         function checkCollision() {
-            // Check wall collisions (handled in moveSnake with wrapping)
             // Check self collision (skip first 3 segments)
             for (let i = 3; i < snake.length; i++) {
                 if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
@@ -516,9 +752,16 @@
             currentScoreElement.textContent = score;
             createFood();
             
-            // Increase speed slightly every 5 foods
-            if (score % 50 === 0 && gameSpeed > 50) {
-                gameSpeed -= 5;
+            // Increase speed slightly every 5 foods based on difficulty
+            if (score % 50 === 0) {
+                if (difficulty === "easy" && gameSpeed > 100) {
+                    gameSpeed -= 5;
+                } else if (difficulty === "medium" && gameSpeed > 70) {
+                    gameSpeed -= 7;
+                } else if (difficulty === "hard" && gameSpeed > 50) {
+                    gameSpeed -= 10;
+                }
+                
                 clearInterval(gameInterval);
                 gameInterval = setInterval(gameLoop, gameSpeed);
             }
@@ -600,55 +843,45 @@
         function gameOver() {
             clearInterval(gameInterval);
             finalScoreElement.textContent = score;
+            finalPlayerName.textContent = playerName;
+            
+            // Create score object
+            const newScore = {
+                player: playerName,
+                score: score,
+                difficulty: difficulty,
+                date: new Date().toLocaleDateString()
+            };
             
             // Add to high scores
-            highScores.push({
-                score: score,
-                date: new Date().toLocaleDateString()
-            });
+            highScores.push(newScore);
             
-            // Sort and keep top 5
+            // Sort by score (descending)
             highScores.sort((a, b) => b.score - a.score);
-            highScores = highScores.slice(0, 5);
-            localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
             
-            // Show game over modal
-            gameOverModal.style.display = 'flex';
-        }
-        
-        // Update High Scores Display
-        function updateHighScoresDisplay() {
-            highScoresList.innerHTML = '';
-            
-            if (highScores.length === 0) {
-                highScoresList.innerHTML = '<p style="text-align: center;">No scores yet!</p>';
-                return;
+            // Keep only top 10 scores
+            if (highScores.length > 10) {
+                highScores = highScores.slice(0, 10);
             }
             
-            highScores.forEach((item, index) => {
-                const scoreItem = document.createElement('div');
-                scoreItem.style.display = 'flex';
-                scoreItem.style.justifyContent = 'space-between';
-                scoreItem.style.padding = '10px';
-                scoreItem.style.borderBottom = '1px solid #eee';
-                
-                const rank = document.createElement('span');
-                rank.textContent = `${index + 1}.`;
-                
-                const scoreValue = document.createElement('span');
-                scoreValue.textContent = item.score;
-                
-                const date = document.createElement('span');
-                date.textContent = item.date;
-                date.style.color = '#777';
-                date.style.fontSize = '0.9em';
-                
-                scoreItem.appendChild(rank);
-                scoreItem.appendChild(scoreValue);
-                scoreItem.appendChild(date);
-                
-                highScoresList.appendChild(scoreItem);
-            });
+            // Save to localStorage
+            localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
+            
+            // Check if this is a new high score
+            if (highScores[0].player === playerName && highScores[0].score === score) {
+                showCelebration(newScore);
+            } else {
+                // Show game over modal
+                gameOverModal.style.display = 'flex';
+            }
+        }
+        
+        // Show Celebration
+        function showCelebration(score) {
+            championName.textContent = score.player;
+            championScore.textContent = score.score;
+            celebrationModal.style.display = 'flex';
+            createConfetti();
         }
         
         // Create Confetti
@@ -699,6 +932,88 @@
             }
         }
         
+        // Update High Scores Display
+        function updateHighScoresDisplay() {
+            highScoresList.innerHTML = '';
+            
+            if (highScores.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" style="text-align: center;">No scores yet!</td>';
+                highScoresList.appendChild(row);
+                return;
+            }
+            
+            highScores.forEach((score, index) => {
+                const row = document.createElement('tr');
+                
+                const rankCell = document.createElement('td');
+                rankCell.textContent = index + 1;
+                
+                const playerCell = document.createElement('td');
+                playerCell.textContent = score.player;
+                
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = score.score;
+                
+                const difficultyCell = document.createElement('td');
+                difficultyCell.textContent = score.difficulty.charAt(0).toUpperCase() + score.difficulty.slice(1);
+                
+                const dateCell = document.createElement('td');
+                dateCell.textContent = score.date;
+                
+                row.appendChild(rankCell);
+                row.appendChild(playerCell);
+                row.appendChild(scoreCell);
+                row.appendChild(difficultyCell);
+                row.appendChild(dateCell);
+                
+                highScoresList.appendChild(row);
+            });
+        }
+        
+        // Set Difficulty
+        function setDifficulty(level) {
+            difficulty = level;
+            
+            // Update active button
+            difficultyBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.difficulty === level) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Set game speed based on difficulty
+            switch(level) {
+                case "easy":
+                    gameSpeed = 150;
+                    break;
+                case "medium":
+                    gameSpeed = 100;
+                    break;
+                case "hard":
+                    gameSpeed = 70;
+                    break;
+            }
+        }
+        
+        // Platform Tab Switching
+        function switchPlatformTab(platform) {
+            platformTabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.platform === platform) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            platformInstructions.forEach(instruction => {
+                instruction.classList.remove('active');
+                if (instruction.dataset.platform === platform) {
+                    instruction.classList.add('active');
+                }
+            });
+        }
+        
         // Event Listeners
         playBtn.addEventListener('click', () => {
             mainMenu.classList.add('hidden');
@@ -735,6 +1050,7 @@
         
         homeBtn.addEventListener('click', () => {
             gameOverModal.style.display = 'none';
+            celebrationModal.style.display = 'none';
             gameScreen.classList.remove('show');
             setTimeout(() => {
                 gameScreen.style.display = 'none';
@@ -745,6 +1061,25 @@
         
         closeScoresBtn.addEventListener('click', () => {
             highScoresModal.style.display = 'none';
+        });
+        
+        celebrateBtn.addEventListener('click', () => {
+            celebrationModal.style.display = 'none';
+            gameOverModal.style.display = 'flex';
+        });
+        
+        // Difficulty Buttons
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setDifficulty(btn.dataset.difficulty);
+            });
+        });
+        
+        // Platform Tabs
+        platformTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchPlatformTab(tab.dataset.platform);
+            });
         });
         
         // Keyboard Controls
@@ -780,8 +1115,7 @@
                     break;
             }
         });
-        
-        // Touch Controls
+    // Touch Controls
         upBtn.addEventListener('click', () => {
             if (dy === 0) {
                 dx = 0;
@@ -809,7 +1143,7 @@
                 dy = 0;
             }
         });
-        
+
         // Touch screen edges for mobile controls
         gameCanvas.addEventListener('touchstart', (e) => {
             const touchX = e.touches[0].clientX;
@@ -848,16 +1182,62 @@
                 }
             }
         }, { passive: true });
-        
+
         // Prevent touch scrolling
         document.addEventListener('touchmove', (e) => {
             if (gameScreen.style.display === 'flex') {
                 e.preventDefault();
             }
         }, { passive: false });
-        
-        // Initialize high scores
-        updateHighScoresDisplay();
+
+        // Initialize the game when the page loads
+        window.addEventListener('load', () => {
+            // Set default player name if none is entered
+            playerNameInput.value = localStorage.getItem('lastPlayerName') || '';
+            
+            // Load high scores
+            highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+            
+            // Set up platform tabs
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+                switchPlatformTab('mobile');
+            } else {
+                switchPlatformTab('desktop');
+            }
+            
+            // Set default difficulty
+            setDifficulty('easy');
+        });
+
+        // Save player name when changed
+        playerNameInput.addEventListener('input', () => {
+            localStorage.setItem('lastPlayerName', playerNameInput.value);
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (gameScreen.style.display === 'flex') {
+                // Recalculate canvas size if game is active
+                const maxSize = Math.min(window.innerWidth - 40, window.innerHeight - 200);
+                gameCanvas.width = Math.floor(maxSize / gridSize) * gridSize;
+                gameCanvas.height = gameCanvas.width;
+                tileSize = gameCanvas.width / gridSize;
+                
+                // Redraw the game
+                drawGame();
+            }
+        });
+
+        // Add this at the end to ensure all elements are loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus on player name input when menu is shown
+            mainMenu.addEventListener('transitionend', () => {
+                if (!mainMenu.classList.contains('hidden')) {
+                    playerNameInput.focus();
+                }
+            });
+        });
     </script>
 </body>
 </html>
