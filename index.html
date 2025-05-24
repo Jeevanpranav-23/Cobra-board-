@@ -91,26 +91,41 @@
             margin-right: 10px;
         }
         
-        /* Difficulty Selection */
-        .difficulty-buttons {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-            width: 80%;
-            max-width: 300px;
-        }
-        
-        .difficulty-btn {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid white;
-            border-radius: 50px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
+        /* Update the difficulty buttons section */
+.difficulty-buttons {
+    display: flex;
+    gap: 5px;
+    margin: 15px 0;
+    width: 90%;
+    max-width: 350px;
+    flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+    justify-content: center;
+}
+
+.difficulty-btn {
+    padding: 8px 5px; /* Reduced padding for mobile */
+    border: 2px solid white;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.8rem; /* Smaller font for mobile */
+    min-width: 60px; /* Minimum width for readability */
+    flex: 1 1 auto; /* Allow buttons to grow/shrink */
+}
+
+/* Media query for very small screens */
+@media (max-width: 400px) {
+    .difficulty-buttons {
+        gap: 3px;
+    }
+    .difficulty-btn {
+        padding: 6px 3px;
+        font-size: 0.7rem;
+        min-width: 50px;
+    }
+}
         .difficulty-btn.active {
             background: rgba(255,255,255,0.4);
             font-weight: bold;
@@ -464,14 +479,13 @@
         
         <input type="text" class="player-name-input" id="playerNameInput" placeholder="Enter your name" maxlength="15">
         
-        <div class="difficulty-buttons">
+       <div class="difficulty-buttons">
     <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
     <button class="difficulty-btn" data-difficulty="medium">Medium</button>
     <button class="difficulty-btn" data-difficulty="hard">Hard</button>
     <button class="difficulty-btn" data-difficulty="expert">Expert</button>
     <button class="difficulty-btn" data-difficulty="insane">Insane</button>
-    </div>
-        
+</div>
         <div class="menu-buttons">
             <button class="menu-btn" id="playBtn"><i class="fas fa-play"></i> Play Game</button>
             <button class="menu-btn" id="howToPlayBtn"><i class="fas fa-question-circle"></i> How to Play</button>
@@ -1542,6 +1556,15 @@ function updateWalls() {
                 }
             });
         });
+
+        // After DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+    console.log(`Found ${difficultyButtons.length} difficulty buttons`); // Should show 5
+    difficultyButtons.forEach(btn => {
+        console.log(btn.textContent, btn.dataset.difficulty);
+    });
+});
     </script>
 </body>
 </html>
