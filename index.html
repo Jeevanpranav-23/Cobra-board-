@@ -130,6 +130,7 @@
             background-color: #f5f5f5;
             transition: transform 0.5s ease;
             z-index: 5;
+            padding-top: 10px;
         }
         
         .game-container.show {
@@ -144,6 +145,7 @@
             background-color: #2c3e50;
             color: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 8px 15px; 
         }
         
         .score-display {
@@ -162,6 +164,9 @@
             font-size: 1.2rem;
             cursor: pointer;
         }
+        .game-container.paused #gameCanvas {
+           filter: blur(2px);
+        }
         
         /* Game Canvas */
         #gameCanvas {
@@ -172,43 +177,57 @@
             max-width: 100%;
             max-height: 70vh;
             aspect-ratio: 1/1;
+            margin-top: 5px; 
+            border-width: 8px;
         }
         
-        /* Touch Controls */
-        .touch-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-            width: 100%;
+        .touch-controls 
+        {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+        width: 100%;
+        padding: 0 10px;
         }
-        
-        .touch-row {
-            display: flex;
-            justify-content: center;
-            width: 100%;
+
+        .touch-row 
+        {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        gap: 5px;
         }
-        
+     
         .touch-btn {
-            width: 80px;
-            height: 80px;
-            margin: 5px;
-            background: rgba(52, 152, 219, 0.7);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-        }
-        
-        .touch-btn:active {
-            background: rgba(41, 128, 185, 0.9);
-            transform: scale(0.95);
-        }
+    width: 70px;
+    height: 70px;
+    background: rgba(52, 152, 219, 0.7);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.8rem;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    transition: all 0.2s ease;
+}
+
+.touch-btn:hover {
+    background: rgba(52, 152, 219, 0.9);
+}
+
+@media (max-width: 600px) {
+    .touch-btn {
+        width: 65px;
+        height: 65px;
+        font-size: 1.6rem;
+    }
+}
         
         /* Popup Modals */
         .modal {
@@ -420,6 +439,22 @@
                 font-size: 1.5rem;
             }
         }
+        /* Pause Modal */
+.pause-modal .modal-content {
+    text-align: center;
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    color: white;
+    animation: scaleIn 0.2s ease-out;
+}
+@keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.pause-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -579,7 +614,20 @@
             <button class="modal-btn" id="celebrateBtn">Awesome!</button>
         </div>
     </div>
-    
+    <!-- Pause Modal -->
+<div class="modal pause-modal" id="pauseModal">
+    <div class="modal-content">
+        <h2 class="pause-title">Game Paused</h2>
+        <div class="action-buttons">
+            <button class="modal-btn action-btn" id="resumeBtn">
+                <i class="fas fa-play"></i> Resume
+            </button>
+            <button class="modal-btn action-btn btn-home" id="pauseHomeBtn">
+                <i class="fas fa-home"></i> Main Menu
+            </button>
+        </div>
+    </div>
+</div>
     <script>
         // Game Elements
         const mainMenu = document.getElementById('mainMenu');
@@ -608,6 +656,10 @@
         const homeBtn = document.getElementById('homeBtn');
         const closeScoresBtn = document.getElementById('closeScoresBtn');
         const celebrateBtn = document.getElementById('celebrateBtn');
+        const pauseModal = document.getElementById('pauseModal');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const pauseHomeBtn = document.getElementById('pauseHomeBtn');
+        const pauseSound = new Audio('pause.mp3'); 
         
         // Direction Buttons
         const upBtn = document.getElementById('upBtn');
@@ -1039,10 +1091,25 @@
         });
         
         pauseBtn.addEventListener('click', () => {
-            isPaused = !isPaused;
-            pauseBtn.innerHTML = isPaused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
-        });
-        
+        isPaused = true;
+        pauseModal.style.display = 'flex';
+       });
+
+       resumeBtn.addEventListener('click', () => {
+       isPaused = false;
+       pauseModal.style.display = 'none';
+       });
+       
+       pauseHomeBtn.addEventListener('click', () => {
+       isPaused = false;
+       pauseModal.style.display = 'none';
+       gameScreen.classList.remove('show');
+       setTimeout(() => {
+        gameScreen.style.display = 'none';
+        mainMenu.classList.remove('hidden');
+        document.body.style.overflow = 'auto';
+        }, 500);
+       });
         playAgainBtn.addEventListener('click', () => {
             gameOverModal.style.display = 'none';
             initGame();
@@ -1111,7 +1178,13 @@
                     break;
                 case ' ':
                     isPaused = !isPaused;
+                    pauseSound.play();
                     pauseBtn.innerHTML = isPaused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
+                     if (isPaused) {
+                    pauseModal.style.display = 'flex';
+                    } else {
+                    pauseModal.style.display = 'none';
+                    }
                     break;
             }
         });
