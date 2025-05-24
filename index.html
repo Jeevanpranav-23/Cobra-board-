@@ -465,10 +465,12 @@
         <input type="text" class="player-name-input" id="playerNameInput" placeholder="Enter your name" maxlength="15">
         
         <div class="difficulty-buttons">
-            <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
-            <button class="difficulty-btn" data-difficulty="medium">Medium</button>
-            <button class="difficulty-btn" data-difficulty="hard">Hard</button>
-        </div>
+    <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+    <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+    <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+    <button class="difficulty-btn" data-difficulty="expert">Expert</button>
+    <button class="difficulty-btn" data-difficulty="insane">Insane</button>
+    </div>
         
         <div class="menu-buttons">
             <button class="menu-btn" id="playBtn"><i class="fas fa-play"></i> Play Game</button>
@@ -659,7 +661,7 @@
         const pauseModal = document.getElementById('pauseModal');
         const resumeBtn = document.getElementById('resumeBtn');
         const pauseHomeBtn = document.getElementById('pauseHomeBtn');
-        const pauseSound = new Audio('pause.mp3'); 
+      
         
         // Direction Buttons
         const upBtn = document.getElementById('upBtn');
@@ -691,6 +693,35 @@
         let playerName = "Player";
         let difficulty = "easy";
         let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+        let powerUps = [];
+        let hasWallBreaker = false;
+        let wallBreakerTime = 0;
+        let walls = [];
+      const difficultyWalls = {
+    easy: [], // No walls
+    medium: [ // Simple barriers
+        {x: 5, y: 5, w: 10, h: 1, type: 'static'},
+        {x: 10, y: 1, w: 1, h: 10, type: 'static'}
+    ],
+    hard: [ // Maze pattern
+        {x: 3, y: 3, w: 14, h: 1, type: 'static'},
+        {x: 3, y: 16, w: 14, h: 1, type: 'static'},
+        {x: 3, y: 3, w: 1, h: 14, type: 'static'},
+        {x: 16, y: 3, w: 1, h: 14, type: 'static'},
+        {x: 8, y: 8, w: 4, h: 1, type: 'static'}
+    ],
+    expert: [ // Moving and bouncing walls
+        {x: 5, y: 5, w: 10, h: 1, type: 'horizontal', dx: 1},
+        {x: 10, y: 1, w: 1, h: 10, type: 'vertical', dy: 1},
+        {x: 15, y: 15, w: 2, h: 2, type: 'bouncing', dx: 1, dy: 1}
+    ],
+    insane: [ // Disappearing walls
+        {x: 2, y: 2, w: 16, h: 1, type: 'blinking', timer: 0},
+        {x: 2, y: 17, w: 16, h: 1, type: 'blinking', timer: 30},
+        {x: 2, y: 2, w: 1, h: 16, type: 'blinking', timer: 15},
+        {x: 17, y: 2, w: 1, h: 16, type: 'blinking', timer: 45}
+    ]
+};
         
         // Initialize Game
         function initGame() {
@@ -730,7 +761,15 @@
         // Game Loop
         function gameLoop() {
             if (isPaused) return;
-            
+            // Update wall breaker timer
+        if (hasWallBreaker) {
+          wallBreakerTime--;
+          if (wallBreakerTime <= 0) {
+            hasWallBreaker = false;
+        }
+    }
+    
+            updateWalls();
             // Move snake
             moveSnake();
             
@@ -751,6 +790,18 @@
         
         // Move Snake
         function moveSnake() {
+            // Check power-up collection
+         const headX = Math.floor(snake[0].x / tileSize);
+         const headY = Math.floor(snake[0].y / tileSize);
+    
+         powerUps = powerUps.filter(pu => {
+         if (pu.x === headX && pu.y === headY) {
+            hasWallBreaker = true;
+            wallBreakerTime = 300; // 5 seconds at 60fps
+            return false;
+        }
+        return true;
+    });
             // Create new head
             const head = {
                 x: snake[0].x + dx,
@@ -780,25 +831,109 @@
                     return true;
                 }
             }
+             // Wall collision (only check if no wall breaker)
+            if (!hasWallBreaker) {
+            const head = snake[0];
+            for (const wall of walls) {
+            if (wall.type === 'blinking' && wall.timer > 30) continue;
+            
+            if (head.x >= wall.x * tileSize && 
+                head.x < (wall.x + wall.w) * tileSize &&
+                head.y >= wall.y * tileSize && 
+                head.y < (wall.y + wall.h) * tileSize) {
+                return true;
+            }
+        }
+    }
+    
             return false;
         }
         
-        // Create Food
-        function createFood() {
-            food = {
-                x: Math.floor(Math.random() * gridSize) * tileSize,
-                y: Math.floor(Math.random() * gridSize) * tileSize
-            };
-            
-            // Make sure food doesn't appear on snake
-            for (let segment of snake) {
-                if (segment.x === food.x && segment.y === food.y) {
-                    return createFood();
-                }
+      function createFood() {
+    let validPosition = false;
+    let foodX, foodY;
+    
+    while (!validPosition) {
+        foodX = Math.floor(Math.random() * gridSize);
+        foodY = Math.floor(Math.random() * gridSize);
+        validPosition = true;
+        
+        // Check wall collisions
+        for (const wall of walls) {
+            if (foodX >= wall.x && foodX < wall.x + wall.w &&
+                foodY >= wall.y && foodY < wall.y + wall.h) {
+                validPosition = false;
+                break;
             }
         }
         
-        // Eat Food
+        // Check snake collisions (existing)
+        if (validPosition) {
+            for (const segment of snake) {
+                if (Math.floor(segment.x/tileSize) === foodX && 
+                    Math.floor(segment.y/tileSize) === foodY) {
+                    validPosition = false;
+                    break;
+                }
+            }
+        }
+    }
+    
+    food = {
+        x: foodX * tileSize,
+        y: foodY * tileSize
+    };
+}
+function updateWalls() {
+    walls.forEach(wall => {
+        switch(wall.type) {
+            case 'horizontal':
+                wall.x += wall.dx;
+                if (wall.x <= 0) {
+                    wall.x = 0;
+                    wall.dx *= -1;
+                } else if (wall.x + wall.w >= gridSize) {
+                    wall.x = gridSize - wall.w;
+                    wall.dx *= -1;
+                }
+                break;
+                
+            case 'vertical':
+                wall.y += wall.dy;
+                if (wall.y <= 0) {
+                    wall.y = 0;
+                    wall.dy *= -1;
+                } else if (wall.y + wall.h >= gridSize) {
+                    wall.y = gridSize - wall.h;
+                    wall.dy *= -1;
+                }
+                break;
+                
+            case 'bouncing':
+                wall.x += wall.dx;
+                wall.y += wall.dy;
+                if (wall.x <= 0) {
+                    wall.x = 0;
+                    wall.dx *= -1;
+                } else if (wall.x + wall.w >= gridSize) {
+                    wall.x = gridSize - wall.w;
+                    wall.dx *= -1;
+                }
+                if (wall.y <= 0) {
+                    wall.y = 0;
+                    wall.dy *= -1;
+                } else if (wall.y + wall.h >= gridSize) {
+                    wall.y = gridSize - wall.h;
+                    wall.dy *= -1;
+                }
+                break;
+                
+            case 'blinking':
+                wall.timer = (wall.timer + 1) % 60;
+                break;
+        }
+    });
+}     // Eat Food
         function eatFood() {
             score += 10;
             currentScoreElement.textContent = score;
@@ -817,8 +952,29 @@
                 clearInterval(gameInterval);
                 gameInterval = setInterval(gameLoop, gameSpeed);
             }
+             if (Math.random() < 0.1) {
+             spawnPowerUp();
+            }
+            
         }
+        function spawnPowerUp() {
+        let x, y, valid;
+        do {
+        valid = true;
+        x = Math.floor(Math.random() * gridSize);
+        y = Math.floor(Math.random() * gridSize);
         
+        // Check collisions
+        if (snake.some(s => Math.floor(s.x/tileSize) === x && Math.floor(s.y/tileSize) === y)) {
+            valid = false;
+        }
+        if (walls.some(w => x >= w.x && x < w.x + w.w && y >= w.y && y < w.y + w.h)) {
+            valid = false;
+        }
+        } while (!valid);
+    
+    powerUps.push({x, y});
+        }
         // Draw Game
         function drawGame() {
             // Clear canvas
@@ -865,7 +1021,9 @@
                     ctx.fillRect(segment.x, segment.y, tileSize, tileSize);
                 }
             });
-            
+            ctx.font = 'bold ' + (tileSize/2) + 'px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
             // Draw food
             ctx.fillStyle = '#e74c3c';
             ctx.beginPath();
@@ -889,8 +1047,78 @@
                 Math.PI * 2
             );
             ctx.fill();
-        }
+            // Draw walls
+           ctx.fillStyle = '#7f8c8d';
+           walls.forEach(wall => {
+           ctx.fillRect(
+            wall.x * tileSize,
+            wall.y * tileSize,
+            wall.w * tileSize,
+            wall.h * tileSize
+            );
+           });
+           ctx.fillStyle = '#f1c40f';
+           powerUps.forEach(pu => {
+           ctx.beginPath();
+           ctx.arc(
+            pu.x * tileSize + tileSize/2,
+            pu.y * tileSize + tileSize/2,
+            tileSize/2, 0, Math.PI*2
+        );
+           ctx.fill();
+           ctx.fillStyle = '#000';
+           ctx.fillText('W', pu.x * tileSize + tileSize/2 - 3, pu.y * tileSize + tileSize/2 + 3);
+           ctx.fillStyle = '#f1c40f';
+    });
+    walls.forEach(wall => {
+    // Skip blinking walls when timer > 30 (invisible phase)
+    if (!(wall.type === 'blinking' && wall.timer > 30)) {
+        // Set wall color based on type
+        ctx.fillStyle = 
+            wall.type === 'static' ? '#7f8c8d' :
+            wall.type.includes('bouncing') ? '#e74c3c' : 
+            '#3498db'; // Default for moving walls
         
+        // Draw the main wall rectangle
+        ctx.fillRect(
+            wall.x * tileSize,
+            wall.y * tileSize,
+            wall.w * tileSize,
+            wall.h * tileSize
+        );
+
+        // Add checkerboard pattern for non-static walls
+        if (!wall.type.includes('static')) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < wall.w; i++) {
+                for (let j = 0; j < wall.h; j++) {
+                    if ((i + j) % 2 === 0) {
+                        ctx.fillRect(
+                            (wall.x + i) * tileSize,
+                            (wall.y + j) * tileSize,
+                            tileSize,
+                            tileSize
+                        );
+                    }
+                }
+            }
+        }
+    }
+});
+    
+    // Draw wall breaker effect
+    if (hasWallBreaker) {
+        ctx.strokeStyle = '#f1c40f';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(
+            snake[0].x - 2,
+            snake[0].y - 2,
+            tileSize + 4,
+            tileSize + 4
+        );
+   
+        }
+        }
         // Game Over
         function gameOver() {
             clearInterval(gameInterval);
@@ -1026,7 +1254,7 @@
         // Set Difficulty
         function setDifficulty(level) {
             difficulty = level;
-            
+           walls = difficultyWalls[level] || [];
             // Update active button
             difficultyBtns.forEach(btn => {
                 btn.classList.remove('active');
@@ -1037,15 +1265,21 @@
             
             // Set game speed based on difficulty
             switch(level) {
-                case "easy":
-                    gameSpeed = 150;
-                    break;
-                case "medium":
-                    gameSpeed = 100;
-                    break;
-                case "hard":
-                    gameSpeed = 70;
-                    break;
+               case "easy":
+            gameSpeed = 150;
+            break;
+        case "medium":
+            gameSpeed = 100;
+            break;
+        case "hard":
+            gameSpeed = 70;
+            break;
+        case "expert":
+            gameSpeed = 50;
+            break;
+        case "insane":
+            gameSpeed = 30;
+            break;
             }
         }
         
@@ -1092,11 +1326,13 @@
         
         pauseBtn.addEventListener('click', () => {
         isPaused = true;
+        gameScreen.classList.add('paused');
         pauseModal.style.display = 'flex';
        });
 
        resumeBtn.addEventListener('click', () => {
        isPaused = false;
+       gameScreen.classList.remove('paused');
        pauseModal.style.display = 'none';
        });
        
